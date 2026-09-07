@@ -25,4 +25,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listar());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioDto> editarUsuario (@PathVariable Long id,
+                                                     @RequestBody UsuarioDto usuarioDto){
+        return usuarioService.editar(id, usuarioDto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }
