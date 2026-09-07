@@ -25,8 +25,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setNombre(usuarioDto.getNombre());
         usuario.setEmail(usuarioDto.getEmail());
         usuario.setActivo(true);
-       Usuario guardado =  usuarioRepository.save(usuario);
-        return new UsuarioDto(guardado.getId(), guardado.getNombre(),guardado.getEmail());
+        Usuario guardado = usuarioRepository.save(usuario);
+        return new UsuarioDto(guardado.getId(), guardado.getNombre(), guardado.getEmail());
     }
 
     @Override
@@ -34,9 +34,27 @@ public class UsuarioServiceImpl implements UsuarioService {
         // solo los activos: los eliminados logicamente quedan ocultos
         return usuarioRepository.findByActivoTrue()
                 .stream()
-                .map(u -> new UsuarioDto(u.getId(),u.getNombre(), u.getEmail()))
+                .map(u -> new UsuarioDto(u.getId(), u.getNombre(), u.getEmail()))
                 .collect(Collectors.toList());
+    }
 
+    @Override
+    public Optional<UsuarioDto> editar (Long id, UsuarioDto usuarioDto){
+        Optional<Usuario> encontrado = usuarioRepository.findById(id);
+        if (encontrado.isEmpty()){
+            return Optional.empty();
+        }
+        Usuario usuario = encontrado.get();
+        if (!usuario.getActivo()){
+            // un usuario dado de baja no se puede editar
+            return Optional.empty();
+        }
+        usuario.setNombre(usuarioDto.getNombre());
+        usuario.setEmail(usuarioDto.getEmail());
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return Optional.of(
+                new UsuarioDto(actualizado.getId(), actualizado.getNombre(), actualizado.getEmail())
+        );
     }
 
     @Override
