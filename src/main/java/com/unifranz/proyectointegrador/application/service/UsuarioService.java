@@ -7,4 +7,5 @@ import java.util.List;
 public interface UsuarioService {
     UsuarioDto guardar (UsuarioDto usuarioDto);
     List<UsuarioDto> listar();
+    boolean eliminar (Long id);
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -23,6 +24,21 @@ public class UsuarioController {
     @GetMapping
     public ResponseEntity<List<UsuarioDto>> listarUsuarios(){
         return ResponseEntity.ok(usuarioService.listar());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String,Object>> eliminarUsuario (@PathVariable Long id){
+        boolean eliminado = usuarioService.eliminar(id);
+        if (!eliminado){
+            return ResponseEntity.status(404).body(Map.of(
+                    "eliminado", false,
+                    "mensaje", "No existe un usuario activo con id " + id
+            ));
+        }
+        return ResponseEntity.ok(Map.of(
+                "eliminado", true,
+                "mensaje", "Usuario " + id + " dado de baja correctamente"
+        ));
     }
 
 }

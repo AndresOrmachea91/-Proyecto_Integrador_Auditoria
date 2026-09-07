@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,17 +24,36 @@ public class UsuarioServiceImpl implements UsuarioService {
         // validacion
         usuario.setNombre(usuarioDto.getNombre());
         usuario.setEmail(usuarioDto.getEmail());
+        usuario.setActivo(true);
        Usuario guardado =  usuarioRepository.save(usuario);
         return new UsuarioDto(guardado.getId(), guardado.getNombre(),guardado.getEmail());
     }
 
     @Override
     public List<UsuarioDto> listar(){
-        return usuarioRepository.findAll()
+        // solo los activos: los eliminados logicamente quedan ocultos
+        return usuarioRepository.findByActivoTrue()
                 .stream()
                 .map(u -> new UsuarioDto(u.getId(),u.getNombre(), u.getEmail()))
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public boolean eliminar (Long id){
+        Optional<Usuario> encontrado = usuarioRepository.findById(id);
+        if (encontrado.isEmpty()){
+            return false;
+        }
+        Usuario usuario = encontrado.get();
+        if (!usuario.getActivo()){
+            // ya estaba dado de baja
+            return false;
+        }
+        // eliminado logico: no se usa delete(), solo se apaga la bandera
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
+        return true;
     }
 
 }

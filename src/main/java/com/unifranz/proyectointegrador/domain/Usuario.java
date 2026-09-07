@@ -1,5 +1,6 @@
 package com.unifranz.proyectointegrador.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,4 +22,9 @@ public class Usuario {
 
     private String nombre;
     private String email;
+
+    // eliminado logico: el registro nunca se borra de la base,
+    // solo se marca como inactivo para dejar de mostrarlo
+    @Column(nullable = false)
+    private Boolean activo = true;
 }
