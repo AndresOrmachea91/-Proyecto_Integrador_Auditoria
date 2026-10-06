@@ -1,0 +1,50 @@
+{
+  "info": {
+    "name": "Proyecto Integrador - Auditoria Usuarios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8081" }
+  ],
+  "item": [
+    {
+      "name": "1. Guardar usuario",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Ana\",\n  \"email\": \"ana@mail.com\"\n}" },
+        "url": "{{baseUrl}}/usuarios"
+      }
+    },
+    {
+      "name": "2. Guardar otro usuario",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Luis\",\n  \"email\": \"luis@mail.com\"\n}" },
+        "url": "{{baseUrl}}/usuarios"
+      }
+    },
+    {
+      "name": "3. Editar usuario 1",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Ana Maria\",\n  \"email\": \"ana@mail.com\"\n}" },
+        "url": "{{baseUrl}}/usuarios/1"
+      }
+    },
+    {
+      "name": "4. Eliminar (logico) usuario 2",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/usuarios/2" }
+    },
+    {
+      "name": "5. Listar usuarios (sin eliminados)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/usuarios" }
+    },
+    {
+      "name": "6. Listar solo eliminados",
+      "request": { "method": "GET", "url": "{{baseUrl}}/usuarios/eliminados" }
+    }
+  ]
+}

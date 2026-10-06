@@ -24,17 +24,26 @@ public class UsuarioServiceImpl implements UsuarioService {
         // validacion
         usuario.setNombre(usuarioDto.getNombre());
         usuario.setEmail(usuarioDto.getEmail());
-        usuario.setActivo(true);
+        // fechaCreacion, creadoPor y eliminado los llena Auditable (@PrePersist)
         Usuario guardado = usuarioRepository.save(usuario);
-        return new UsuarioDto(guardado.getId(), guardado.getNombre(), guardado.getEmail());
+        return aDtoConAuditoria(guardado);
     }
 
     @Override
     public List<UsuarioDto> listar(){
-        // solo los activos: los eliminados logicamente quedan ocultos
-        return usuarioRepository.findByActivoTrue()
+        // solo los NO eliminados (eliminado = false), con sus datos de auditoria
+        return usuarioRepository.listarNoEliminados()
                 .stream()
-                .map(u -> new UsuarioDto(u.getId(), u.getNombre(), u.getEmail()))
+                .map(this::aDtoConAuditoria)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UsuarioDto> listarEliminados(){
+        // solo los eliminados logicamente (eliminado = true), siguen en la tabla
+        return usuarioRepository.listarEliminados()
+                .stream()
+                .map(this::aDtoConAuditoria)
                 .collect(Collectors.toList());
     }
 
@@ -45,16 +54,15 @@ public class UsuarioServiceImpl implements UsuarioService {
             return Optional.empty();
         }
         Usuario usuario = encontrado.get();
-        if (!usuario.getActivo()){
-            // un usuario dado de baja no se puede editar
+        if (usuario.getEliminado()){
+            // un usuario eliminado no se puede editar
             return Optional.empty();
         }
         usuario.setNombre(usuarioDto.getNombre());
         usuario.setEmail(usuarioDto.getEmail());
-        Usuario actualizado = usuarioRepository.save(usuario);
-        return Optional.of(
-                new UsuarioDto(actualizado.getId(), actualizado.getNombre(), actualizado.getEmail())
-        );
+        // fechaModificacion y modificadoPor los llena Auditable (@PreUpdate)
+        Usuario actualizado = usuarioRepository.saveAndFlush(usuario);
+        return Optional.of(aDtoConAuditoria(actualizado));
     }
 
     @Override
@@ -64,14 +72,20 @@ public class UsuarioServiceImpl implements UsuarioService {
             return false;
         }
         Usuario usuario = encontrado.get();
-        if (!usuario.getActivo()){
-            // ya estaba dado de baja
+        if (usuario.getEliminado()){
+            // ya estaba eliminado
             return false;
         }
-        // eliminado logico: no se usa delete(), solo se apaga la bandera
-        usuario.setActivo(false);
+        // eliminado logico: no se usa delete(), solo se marca la bandera
+        usuario.setEliminado(true);
         usuarioRepository.save(usuario);
         return true;
+    }
+
+    private UsuarioDto aDtoConAuditoria(Usuario u){
+        return new UsuarioDto(u.getId(), u.getNombre(), u.getEmail(),
+                u.getFechaCreacion(), u.getFechaModificacion(),
+                u.getCreadoPor(), u.getModificadoPor(), u.getEliminado());
     }
 
 }

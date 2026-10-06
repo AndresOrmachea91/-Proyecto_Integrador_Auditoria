@@ -1,6 +1,5 @@
 package com.unifranz.proyectointegrador.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,21 +9,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// hereda las 5 columnas de auditoria:
+// fechaCreacion, fechaModificacion, creadoPor, modificadoPor, eliminado
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Usuario extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
     private String email;
-
-    // eliminado logico: el registro nunca se borra de la base,
-    // solo se marca como inactivo para dejar de mostrarlo
-    @Column(nullable = false)
-    private Boolean activo = true;
 }

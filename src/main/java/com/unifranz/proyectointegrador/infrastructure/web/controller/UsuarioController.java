@@ -27,6 +27,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listar());
     }
 
+    @GetMapping("/eliminados")
+    public ResponseEntity<List<UsuarioDto>> listarEliminados(){
+        return ResponseEntity.ok(usuarioService.listarEliminados());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDto> editarUsuario (@PathVariable Long id,
                                                      @RequestBody UsuarioDto usuarioDto){
@@ -41,12 +46,12 @@ public class UsuarioController {
         if (!eliminado){
             return ResponseEntity.status(404).body(Map.of(
                     "eliminado", false,
-                    "mensaje", "No existe un usuario activo con id " + id
+                    "mensaje", "No existe un usuario no eliminado con id " + id
             ));
         }
         return ResponseEntity.ok(Map.of(
                 "eliminado", true,
-                "mensaje", "Usuario " + id + " dado de baja correctamente"
+                "mensaje", "Usuario " + id + " eliminado correctamente"
         ));
     }
 

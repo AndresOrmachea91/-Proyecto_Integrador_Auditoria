@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface UsuarioService {
     UsuarioDto guardar (UsuarioDto usuarioDto);
     List<UsuarioDto> listar();
+    List<UsuarioDto> listarEliminados();
     Optional<UsuarioDto> editar (Long id, UsuarioDto usuarioDto);
     boolean eliminar (Long id);
 }
